@@ -1,0 +1,10 @@
+INSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('a', 'a', FALSE);
+INSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('xcv@sdf.js', 'wwx', FALSE);
+INSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('fcv@sdf.js', 'wwf', FALSE);
+INSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('azv@sdf.js', 'wwa', FALSE);
+INSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('qrv@sdf.js', 'wwq', FALSE);
+INSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Komedie', 31.50);
+INSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Horror', 22.50);
+INSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Romantiek', 19.50);
+INSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id) VALUES (1, 3);
+INSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id) VALUES (4, 1);
