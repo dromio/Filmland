@@ -48,10 +48,10 @@ public class AbonneeController {
 	 * @param cid id van de abonnementscategorie
 	 */
 	@RequestMapping("abonneecat/{id}/{cid}")
-	private void setCategorie(@PathVariable("id") Integer id, @PathVariable("cid") Integer cid) {
+	private String setCategorie(@PathVariable("id") Integer id, @PathVariable("cid") Integer cid) {
 	//	abonneeService.addCategorie(abonneeService.getAbonneeByid(id), categorieService.getCategorieByid(cid));
 		logger.log(Level.WARN,"id="+id+"cid="+cid);
-		abonneeService.addCategorie(abonneeService.getAbonneeByid(id), cid);
+		return abonneeService.subscribe(abonneeService.getAbonneeByid(id), cid);
 		
 	
 	}

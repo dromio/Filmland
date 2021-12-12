@@ -40,4 +40,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authProvider());
     }
+    
+    
+    //https://stackoverflow.com/questions/43794721/spring-boot-h2-console-throws-403-with-spring-security-1-5-2
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/h2-console/**").permitAll();
+
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
+    }
 }

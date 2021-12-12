@@ -6,5 +6,5 @@ INSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('qrv@sdf.js', 'wwq', FA
 INSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Komedie', 31.50);
 INSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Horror', 22.50);
 INSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Romantiek', 19.50);
-INSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id) VALUES (1, 3);
-INSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id) VALUES (4, 1);
+INSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id, prijs) VALUES (1, 3, 231.50);
+INSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id, prijs) VALUES (4, 1, 329.40);

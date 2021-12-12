@@ -33,7 +33,7 @@ public class CategorieController {
 	}
 	
 	
-	@RequestMapping("/subscrcategorien")
+	@RequestMapping("/subscribedcategorieen")
 	private List<Categorie> getSubscribedCategorieen(){
 		logger.log(Level.INFO,"getSubscribedCategorieen entered");
 

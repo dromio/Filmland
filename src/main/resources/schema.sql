@@ -17,5 +17,8 @@ DROP TABLE IF EXISTS ABONNEE_CATEGORIE;
 CREATE TABLE ABONNEE_CATEGORIE(
   id INT AUTO_INCREMENT  PRIMARY KEY,
   abonnee_id INT NOT NULL,
-  categorie_id INT NOT NULL
+  categorie_id INT NOT NULL,
+  prijs DECIMAL(10,2) NOT NULL,
+  start_datum DATE,
+  eind_datum DATE
 );

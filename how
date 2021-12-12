@@ -1,0 +1,809 @@
+[33mcommit 0437721bfbfbea8764e23bf208afe77c5a086924[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: Dromio <vincent.van.doorn@sogeti.com>
+Date:   Mon Nov 29 12:43:16 2021 +0100
+
+    Initial code drop
+
+[1mdiff --git a/src/main/java/vin/test/AbonneeController.java b/src/main/java/vin/test/AbonneeController.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..de83a24[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/AbonneeController.java[m
+[36m@@ -0,0 +1,66 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+[32m+[m[32mimport org.jboss.logging.Logger;[m
+[32m+[m[32mimport org.jboss.logging.Logger.Level;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.DeleteMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.GetMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.PathVariable;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.PostMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RequestBody;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RequestMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RestController;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Abonnee;[m
+[32m+[m
+[32m+[m[32m@RestController[m
+[32m+[m[32m@RequestMapping("abonnees")[m
+[32m+[m[32mpublic class AbonneeController {[m
+[32m+[m
+[32m+[m	[32mLogger logger = Logger.getLogger(AbonneeController.class.getName());[m
+[32m+[m
+[32m+[m[41m	[m
+[32m+[m	[32m@Autowired[m
+[32m+[m	[32mAbonneeService abonneeService;[m
+[32m+[m	[32mCategorieService categorieService;[m
+[32m+[m
+[32m+[m	[32m@GetMapping[m
+[32m+[m	[32mprivate List<Abonnee> getAbonnees() {[m
+[32m+[m		[32mreturn abonneeService.getAllAbonnees();[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32m@PostMapping("/abonnee")[m
+[32m+[m	[32mprivate int updateAbonnee(@RequestBody Abonnee abonnee) {[m
+[32m+[m		[32mabonneeService.saveOrUpdate(abonnee);[m
+[32m+[m		[32mreturn abonnee.getId();[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32m@GetMapping("/abonnee/{id}")[m
+[32m+[m	[32mprivate Abonnee getAbonnee(@PathVariable("id") Integer id) {[m
+[32m+[m		[32mreturn abonneeService.getAbonneeByid(id);[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32m/**[m
+[32m+[m	[32m *[m[41m [m
+[32m+[m	[32m * @param id id van de abonnee[m
+[32m+[m	[32m * @param cid id van de abonnementscategorie[m
+[32m+[m	[32m */[m
+[32m+[m	[32m@RequestMapping("abonneecat/{id}/{cid}")[m
+[32m+[m	[32mprivate void setCategorie(@PathVariable("id") Integer id, @PathVariable("cid") Integer cid) {[m
+[32m+[m	[32m//	abonneeService.addCategorie(abonneeService.getAbonneeByid(id), categorieService.getCategorieByid(cid));[m
+[32m+[m		[32mlogger.log(Level.WARN,"id="+id+"cid="+cid);[m
+[32m+[m		[32mabonneeService.addCategorie(abonneeService.getAbonneeByid(id), cid);[m
+[32m+[m[41m		[m
+[32m+[m[41m	[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m	[32m@DeleteMapping("/abonneedel/{id}")[m
+[32m+[m	[32mprivate void deleteAbonnee(@PathVariable("id") Integer id) {[m
+[32m+[m		[32mabonneeService.deleteAbonnee(id);[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/AbonneeLoginService.java b/src/main/java/vin/test/AbonneeLoginService.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0e127f7[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/AbonneeLoginService.java[m
+[36m@@ -0,0 +1,36 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.security.core.userdetails.User;[m
+[32m+[m[32mimport org.springframework.security.core.userdetails.UserDetails;[m
+[32m+[m[32mimport org.springframework.security.core.userdetails.UserDetailsService;[m
+[32m+[m[32mimport org.springframework.security.core.userdetails.UsernameNotFoundException;[m
+[32m+[m[32mimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;[m
+[32m+[m[32mimport org.springframework.stereotype.Service;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Abonnee;[m
+[32m+[m
+[32m+[m[32m@Service[m
+[32m+[m[32mpublic class AbonneeLoginService implements UserDetailsService {[m
+[32m+[m
+[32m+[m	[32m@Autowired[m
+[32m+[m	[32mprivate AbonneeRepos abonneeRepos;[m
+[32m+[m
+[32m+[m	[32m@Override[m
+[32m+[m	[32mpublic UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {[m
+[32m+[m		[32mfinal Abonnee abonnee = abonneeRepos.findByEmail(email);[m
+[32m+[m		[32mif (abonnee == null) {[m
+[32m+[m			[32mthrow new UsernameNotFoundException(email);[m
+[32m+[m		[32m}[m
+[32m+[m[41m		[m
+[32m+[m		[32m//normaliseer wachtwoord[m
+[32m+[m		[32mBCryptPasswordEncoder cryptPasswordEncoder = new BCryptPasswordEncoder();[m
+[32m+[m		[32mString hash = cryptPasswordEncoder.encode(abonnee.getWachtwoord());[m
+[32m+[m		[32mUserDetails user = User.withUsername(abonnee.getEmail()).password(hash).authorities("USER")[m
+[32m+[m				[32m.build();[m
+[32m+[m
+[32m+[m[32m//		UserDetails user = User.withUsername(abonnee.getEmail()).password(abonnee.getWachtwoord()).authorities("USER")[m
+[32m+[m[32m//				.build();[m
+[32m+[m		[32mreturn user;[m
+[32m+[m	[32m}[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/AbonneeRepos.java b/src/main/java/vin/test/AbonneeRepos.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1a6b11a[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/AbonneeRepos.java[m
+[36m@@ -0,0 +1,32 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport javax.transaction.Transactional;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.Modifying;[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.Query;[m
+[32m+[m[32mimport org.springframework.data.repository.CrudRepository;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Abonnee;[m
+[32m+[m
+[32m+[m
+[32m+[m[32m/**[m
+[32m+[m[32m * Repository-interface om de data uit de databes te lezen en aan te[m[41m [m
+[32m+[m[32m * passen.[m
+[32m+[m[32m *[m[41m [m
+[32m+[m[32m * */[m
+[32m+[m[32mpublic interface AbonneeRepos extends CrudRepository<Abonnee, Integer>{[m
+[32m+[m[41m	[m
+[32m+[m	[32m@Transactional[m
+[32m+[m	[32m@Modifying[m
+[32m+[m	[32m@Query(value = "INSERT INTO ABONNEE_CATEGORIE (abonnee_id, categorie_id) VALUES (?1, ?2) ", nativeQuery=true)[m
+[32m+[m	[32mvoid addCategorie( Integer id, Integer cid);[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m	[32m//derived queries;[m
+[32m+[m	[32mAbonnee findByEmail(String email);[m
+[32m+[m[41m	[m
+[32m+[m	[32mboolean ingelogdTrue();[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/AbonneeService.java b/src/main/java/vin/test/AbonneeService.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6990cd7[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/AbonneeService.java[m
+[36m@@ -0,0 +1,49 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport java.util.ArrayList;[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.stereotype.Service;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Abonnee;[m
+[32m+[m
+[32m+[m[32m@Service[m
+[32m+[m[32mpublic class AbonneeService {[m
+[32m+[m
+[32m+[m	[32m@Autowired[m
+[32m+[m	[32mAbonneeRepos abonneeRepos;[m
+[32m+[m
+[32m+[m[32m//hier[m[41m	[m
+[32m+[m[32m//	void addCategorie(Abonnee abonnee, Categorie categorie) {[m
+[32m+[m	[32mvoid addCategorie(Abonnee abonnee, Integer categorie_id) {[m
+[32m+[m[32m//		abonneeRepos.addCategorie(abonnee.getId(), categorie.getId());[m
+[32m+[m		[32mabonneeRepos.addCategorie(abonnee.getId(), categorie_id);[m
+[32m+[m
+[32m+[m	[32m};[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic List<Abonnee> getAllAbonnees(){[m
+[32m+[m		[32mList<Abonnee> abonnees= new ArrayList<Abonnee>();[m
+[32m+[m		[32mabonneeRepos.findAll().forEach(abonnee->abonnees.add(abonnee));[m
+[32m+[m		[32mreturn abonnees;[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic Abonnee getAbonneeByid(int id) {[m
+[32m+[m		[32mreturn abonneeRepos.findById(id).get();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic void deleteAbonnee(int abonneeId ) {[m
+[32m+[m		[32mabonneeRepos.deleteById(abonneeId);[m
+[32m+[m[41m		[m
+[32m+[m		[32m// TODO delete uit koppeltabel[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic void saveOrUpdate(Abonnee abonneeId) {[m
+[32m+[m		[32mabonneeRepos.save(abonneeId);[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic Boolean isIngelogd(Abonnee abonnee) {[m
+[32m+[m		[32mreturn abonnee.getIngelogd();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/CategorieController.java b/src/main/java/vin/test/CategorieController.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..dcb2c1e[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/CategorieController.java[m
+[36m@@ -0,0 +1,59 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+[32m+[m[32mimport org.jboss.logging.Logger;[m
+[32m+[m[32mimport org.jboss.logging.Logger.Level;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.DeleteMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.GetMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.PathVariable;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.PostMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RequestBody;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RequestMapping;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.RestController;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Categorie;[m
+[32m+[m
+[32m+[m[32m@RestController[m
+[32m+[m[32mpublic class CategorieController {[m
+[32m+[m
+[32m+[m[41m	[m
+[32m+[m	[32mLogger logger = Logger.getLogger(CategorieController.class.getName());[m
+[32m+[m
+[32m+[m	[32m@Autowired[m
+[32m+[m	[32mCategorieService categorieService;[m
+[32m+[m
+[32m+[m	[32m//Handler methhods[m
+[32m+[m	[32m//@GetMapping[m
+[32m+[m	[32m@RequestMapping("/categorieen")[m
+[32m+[m	[32mprivate List<Categorie> getCategories() {[m
+[32m+[m		[32mlogger.log(Level.INFO,"getCategories entered");[m
+[32m+[m		[32mreturn categorieService.getAllCategorieen();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m	[32m@RequestMapping("/subscrcategorien")[m
+[32m+[m	[32mprivate List<Categorie> getSubscribedCategorieen(){[m
+[32m+[m		[32mlogger.log(Level.INFO,"getSubscribedCategorieen entered");[m
+[32m+[m
+[32m+[m		[32mreturn categorieService.getSubscribedCategorieen();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32m@PostMapping("/categorie")[m
+[32m+[m	[32mprivate int updateCategorie(@RequestBody Categorie categorie) {[m
+[32m+[m		[32mcategorieService.saveOrUpdate(categorie);[m
+[32m+[m		[32mreturn categorie.getId();[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32m@GetMapping("/categorie/{id}")[m
+[32m+[m	[32mprivate Categorie getCategorie(@PathVariable("id") Integer id) {[m
+[32m+[m		[32mreturn categorieService.getCategorieByid(id);[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32m@DeleteMapping("/categoriedel/{id}")[m
+[32m+[m	[32mprivate void deleteCategorie(@PathVariable("id") Integer id) {[m
+[32m+[m		[32mcategorieService.deleteCategorie(id);[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/CategorieRepos.java b/src/main/java/vin/test/CategorieRepos.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b536d9c[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/CategorieRepos.java[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.data.jpa.repository.Query;[m
+[32m+[m[32mimport org.springframework.data.repository.CrudRepository;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Categorie;[m
+[32m+[m
+[32m+[m
+[32m+[m[32mpublic interface CategorieRepos extends CrudRepository<Categorie, Integer>{[m
+[32m+[m
+[32m+[m	[32m// gebruik JPQL native[m
+[32m+[m	[32m@Query(value="SELECT * FROM ABONNEE_CATEGORIE AC, CATEGORIE C WHERE AC.CATEGORIE_ID=C.ID ", nativeQuery=true)[m
+[32m+[m	[32mList<Categorie> getSubscribedCategories();[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/CategorieService.java b/src/main/java/vin/test/CategorieService.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d70132b[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/CategorieService.java[m
+[36m@@ -0,0 +1,53 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport java.util.ArrayList;[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+[32m+[m[32mimport org.jboss.logging.Logger;[m
+[32m+[m[32mimport org.jboss.logging.Logger.Level;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+[32m+[m[32mimport org.springframework.stereotype.Service;[m
+[32m+[m
+[32m+[m[32mimport vin.test.model.Categorie;[m
+[32m+[m
+[32m+[m[32m@Service[m
+[32m+[m[32mpublic class CategorieService {[m
+[32m+[m
+[32m+[m	[32mLogger logger = Logger.getLogger(CategorieService.class.getName());[m
+[32m+[m
+[32m+[m	[32m@Autowired[m
+[32m+[m	[32mCategorieRepos categorieRepos;[m
+[32m+[m
+[32m+[m	[32m//HIER[m
+[32m+[m	[32mpublic List<Categorie> getSubscribedCategorieen(){[m
+[32m+[m		[32mlogger.log(Level.INFO,"getSubscribedCategorieen entered");[m
+[32m+[m		[32mList<Categorie> categorieen = new ArrayList<Categorie>();[m
+[32m+[m		[32mcategorieRepos.getSubscribedCategories().forEach(categorie->categorieen.add(categorie));[m
+[32m+[m		[32mif (categorieen.size()== 0) {[m
+[32m+[m			[32mlogger.log(Level.WARN,"Geen abonnementen");[m
+[32m+[m		[32m}[m
+[32m+[m		[32mreturn categorieen;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic List<Categorie> getAllCategorieen(){[m
+[32m+[m		[32mList<Categorie> categorieen = new ArrayList<Categorie>();[m
+[32m+[m		[32mcategorieRepos.findAll().forEach(categorie->categorieen.add(categorie));[m
+[32m+[m		[32mreturn categorieen;[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic Categorie getCategorieByid(int id) {[m
+[32m+[m		[32mreturn categorieRepos.findById(id).get();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic void deleteCategorie(int categorieId ) {[m
+[32m+[m		[32mcategorieRepos.deleteById(categorieId);[m
+[32m+[m[41m		[m
+[32m+[m		[32m// TODO delete uit koppeltabel (cascading)[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic void saveOrUpdate(Categorie categorieId) {[m
+[32m+[m		[32mcategorieRepos.save(categorieId);[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/FilmlandApplication.java b/src/main/java/vin/test/FilmlandApplication.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..91f29a6[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/FilmlandApplication.java[m
+[36m@@ -0,0 +1,21 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.boot.SpringApplication;[m
+[32m+[m[32mimport org.springframework.boot.autoconfigure.SpringBootApplication;[m
+[32m+[m[32mimport org.springframework.context.annotation.ComponentScan;[m
+[32m+[m
+[32m+[m[32mimport vin.test.*;[m
+[32m+[m
+[32m+[m[32m//@ComponentScan(basePackageClasses = CategorieController.class)[m
+[32m+[m[32m//@ComponentScan(basePackageClasses = { CategorieController.class, AbonneeController.class })[m
+[32m+[m
+[32m+[m[32m@SpringBootApplication[m
+[32m+[m[32m@ComponentScan(basePackageClasses = { AbonneeRepos.class, CategorieRepos.class })[m
+[32m+[m[32mpublic class FilmlandApplication {[m
+[32m+[m
+[32m+[m	[32mpublic static void main(String[] args) {[m
+[32m+[m		[32mSpringApplication.run(FilmlandApplication.class, args);[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/SecurityConfig.java b/src/main/java/vin/test/SecurityConfig.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2b6a67d[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/SecurityConfig.java[m
+[36m@@ -0,0 +1,43 @@[m
+[32m+[m[32mpackage vin.test;[m
+[32m+[m
+[32m+[m
+[32m+[m
+[32m+[m[32mimport org.springframework.context.annotation.Bean;[m
+[32m+[m[32mimport org.springframework.context.annotation.Configuration;[m
+[32m+[m[32mimport org.springframework.security.authentication.dao.DaoAuthenticationProvider;[m
+[32m+[m[32mimport org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;[m
+[32m+[m[32mimport org.springframework.security.config.annotation.web.builders.HttpSecurity;[m
+[32m+[m[32m//import org.springframework.security.config.annotation.web.builders.HttpSecurity;[m
+[32m+[m[32mimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;[m
+[32m+[m[32mimport org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;[m
+[32m+[m[32mimport org.springframework.security.core.userdetails.UserDetailsService;[m
+[32m+[m[32mimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;[m
+[32m+[m[32mimport org.springframework.security.crypto.password.PasswordEncoder;[m
+[32m+[m
+[32m+[m[32mimport javax.annotation.Resource;[m
+[32m+[m
+[32m+[m[32m@Configuration[m
+[32m+[m[32m@EnableWebSecurity[m
+[32m+[m[32mpublic class SecurityConfig extends WebSecurityConfigurerAdapter {[m
+[32m+[m
+[32m+[m[32m    @Resource[m
+[32m+[m[32m    private UserDetailsService userDetailsService;[m
+[32m+[m
+[32m+[m[32m    @Bean[m
+[32m+[m[32m    public DaoAuthenticationProvider authProvider() {[m
+[32m+[m[32m        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();[m
+[32m+[m[32m        authProvider.setUserDetailsService(userDetailsService);[m
+[32m+[m[32m        authProvider.setPasswordEncoder(passwordEncoder());[m
+[32m+[m[32m        return authProvider;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Bean[m
+[32m+[m[32m    public PasswordEncoder passwordEncoder() {[m
+[32m+[m[32m        return new BCryptPasswordEncoder();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    protected void configure(AuthenticationManagerBuilder auth) throws Exception {[m
+[32m+[m[32m        auth.authenticationProvider(authProvider());[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/vin/test/model/Abonnee.java b/src/main/java/vin/test/model/Abonnee.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..744247d[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/model/Abonnee.java[m
+[36m@@ -0,0 +1,80 @@[m
+[32m+[m[32mpackage vin.test.model;[m
+[32m+[m
+[32m+[m[32mimport java.util.HashSet;[m
+[32m+[m[32mimport java.util.Set;[m
+[32m+[m
+[32m+[m[32mimport javax.persistence.CascadeType;[m
+[32m+[m[32mimport javax.persistence.Column;[m
+[32m+[m[32mimport javax.persistence.Entity;[m
+[32m+[m[32mimport javax.persistence.FetchType;[m
+[32m+[m[32mimport javax.persistence.Id;[m
+[32m+[m[32mimport javax.persistence.JoinTable;[m
+[32m+[m[32mimport javax.persistence.JoinColumn;[m
+[32m+[m
+[32m+[m[32mimport javax.persistence.ManyToMany;[m
+[32m+[m[32mimport javax.persistence.Table;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Value;[m
+[32m+[m
+[32m+[m[32m@Entity[m
+[32m+[m[32m@Table[m
+[32m+[m[32mpublic class Abonnee {[m
+[32m+[m
+[32m+[m	[32m@Id[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate int id;[m
+[32m+[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate String email;[m
+[32m+[m[41m	[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate String wachtwoord;[m
+[32m+[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32m@Value("false") // default[m
+[32m+[m	[32mprivate Boolean ingelogd;[m
+[32m+[m
+[32m+[m[41m	[m
+[32m+[m	[32m  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)[m
+[32m+[m	[32m    @JoinTable(name = "ABONNEE_CATEGORIE",[m
+[32m+[m[32m          joinColumns = {[m
+[32m+[m	[32m                    @JoinColumn(name = "abonnee_id", referencedColumnName = "id",[m
+[32m+[m	[32m                            nullable = false, updatable = true)},[m
+[32m+[m	[32m            inverseJoinColumns = {[m
+[32m+[m	[32m                    @JoinColumn(name = "categorie_id", referencedColumnName = "id",[m
+[32m+[m	[32m                           nullable = false, updatable = true)})[m
+[32m+[m	[32mprivate Set<Categorie> categorieen = new HashSet<Categorie>();[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic Boolean getIngelogd() {[m
+[32m+[m		[32mreturn ingelogd;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setIngelogd(Boolean ingelogd) {[m
+[32m+[m		[32mthis.ingelogd = ingelogd;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic int getId() {[m
+[32m+[m		[32mreturn id;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setId(int id) {[m
+[32m+[m		[32mthis.id = id;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic String getEmail() {[m
+[32m+[m		[32mreturn email;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setEmail(String email) {[m
+[32m+[m		[32mthis.email = email;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic String getWachtwoord() {[m
+[32m+[m		[32mreturn wachtwoord;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setWachtwoord(String wachtwoord) {[m
+[32m+[m		[32mthis.wachtwoord = wachtwoord;[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/model/AbonneeBU.java b/src/main/java/vin/test/model/AbonneeBU.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b6d86ac[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/model/AbonneeBU.java[m
+[36m@@ -0,0 +1,60 @@[m
+[32m+[m[32mpackage vin.test.model;[m
+[32m+[m
+[32m+[m[32mimport javax.persistence.Column;[m
+[32m+[m[32mimport javax.persistence.Entity;[m
+[32m+[m[32mimport javax.persistence.Id;[m
+[32m+[m[32mimport javax.persistence.Table;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Value;[m
+[32m+[m
+[32m+[m[32m@Entity[m
+[32m+[m[32m@Table[m
+[32m+[m[32mpublic class AbonneeBU {[m
+[32m+[m
+[32m+[m	[32m@Id[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate int id;[m
+[32m+[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate String email;[m
+[32m+[m[41m	[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate String wachtwoord;[m
+[32m+[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32m@Value("false") // default[m
+[32m+[m	[32mprivate Boolean ingelogd;[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic Boolean getIngelogd() {[m
+[32m+[m		[32mreturn ingelogd;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setIngelogd(Boolean ingelogd) {[m
+[32m+[m		[32mthis.ingelogd = ingelogd;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic int getId() {[m
+[32m+[m		[32mreturn id;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setId(int id) {[m
+[32m+[m		[32mthis.id = id;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic String getEmail() {[m
+[32m+[m		[32mreturn email;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setEmail(String email) {[m
+[32m+[m		[32mthis.email = email;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic String getWachtwoord() {[m
+[32m+[m		[32mreturn wachtwoord;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setWachtwoord(String wachtwoord) {[m
+[32m+[m		[32mthis.wachtwoord = wachtwoord;[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/vin/test/model/Categorie.java b/src/main/java/vin/test/model/Categorie.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3959166[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/vin/test/model/Categorie.java[m
+[36m@@ -0,0 +1,73 @@[m
+[32m+[m[32mpackage vin.test.model;[m
+[32m+[m
+[32m+[m[32mimport java.io.Serializable;[m
+[32m+[m[32mimport java.math.BigDecimal;[m
+[32m+[m[32mimport java.util.HashSet;[m
+[32m+[m[32mimport java.util.Set;[m
+[32m+[m
+[32m+[m[32mimport javax.persistence.Column;[m
+[32m+[m[32mimport javax.persistence.Entity;[m
+[32m+[m[32mimport javax.persistence.FetchType;[m
+[32m+[m[32mimport javax.persistence.Id;[m
+[32m+[m[32mimport javax.persistence.ManyToMany;[m
+[32m+[m[32mimport javax.persistence.Table;[m
+[32m+[m
+[32m+[m[32m@Entity[m
+[32m+[m[32m@Table[m
+[32m+[m[32mpublic class Categorie implements Serializable {[m
+[32m+[m[41m [m
+[32m+[m	[32mprivate static final long serialVersionUID = 589431L;[m
+[32m+[m
+[32m+[m	[32m@Id[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate int id;[m
+[32m+[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate String titel;[m
+[32m+[m[41m	[m
+[32m+[m	[32m@Column[m
+[32m+[m	[32mprivate BigDecimal maandprijs;[m
+[32m+[m[32m// unknown target entity property: vin.test.model.Abonnee.Categorie in vin.test.model.Categorie.abonnees[m[41m	[m
+[32m+[m	[32m@ManyToMany(mappedBy = "categorieen", fetch = FetchType.LAZY)[m
+[32m+[m	[32mprivate Set<Abonnee> abonnees = new HashSet<Abonnee>();[m
+[32m+[m[41m	[m
+[32m+[m[32m//	@ManyToOne (fetch = FetchType.EAGER)[m
+[32m+[m[32m//	@JoinColumn(name = "abonnee_id")[m
+[32m+[m[32m//	private Abonnee abonnee;[m
+[32m+[m
+[32m+[m	[32mpublic BigDecimal getMaandprijs() {[m
+[32m+[m		[32mreturn maandprijs;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[32m    public void setMaandprijs(BigDecimal maandprijs) {[m
+[32m+[m		[32mthis.maandprijs = maandprijs;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic int getId() {[m
+[32m+[m		[32mreturn id;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic void setId(int id) {[m
+[32m+[m		[32mthis.id = id;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic String getTitel() {[m
+[32m+[m		[32mreturn titel;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m
+[32m+[m	[32mpublic void setTitel(String titel) {[m
+[32m+[m		[32mthis.titel = titel;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[32m//[m
+[32m+[m[32m//	public BigDecimal getMaandPrijs() {[m
+[32m+[m[32m//		return maandprijs;[m
+[32m+[m[32m//	}[m
+[32m+[m
+[32m+[m[32m//[m
+[32m+[m[32m//	public void setMaandPrijs(BigDecimal maandPrijs) {[m
+[32m+[m[32m//		this.maandprijs = maandPrijs;[m
+[32m+[m[32m//	}[m
+[32m+[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/resources/application.properties b/src/main/resources/application.properties[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4fab6b6[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/resources/application.properties[m
+[36m@@ -0,0 +1,19 @@[m
+[32m+[m[32mspring.datasource.url=jdbc:h2:mem:filmlanddb[m
+[32m+[m[32m#spring.datasource.url=jdbc:h2:file:D:/data/java[m
+[32m+[m[32mspring.datasource.driverClassName=org.h2.Driver[m
+[32m+[m[32mspring.datasource.username=sa[m
+[32m+[m[32mspring.datasource.password=sa[m
+[32m+[m[32mspring.jpa.defer-datasource-initialization=true[m
+[32m+[m[32mspring.jpa.database-platform=org.hibernate.dialect.H2Dialect[m
+[32m+[m
+[32m+[m[32mspring.jpa.hibernate.ddl-auto=none[m
+[32m+[m
+[32m+[m[32m#spring.sql.init.mode=always[m
+[32m+[m[32mspring.session.jdbc.initialize-schema=always[m
+[32m+[m[32m#server.servlet.context-path=/vin[m
+[32m+[m
+[32m+[m[32m# T.b.v http://localhost:8080/h2-consol[m
+[32m+[m[32mspring.h2.console.enabled=true[m
+[32m+[m[32m#spring.h2.console.path=/h2-console[m
+[32m+[m[32m#spring.h2.console.settings.trace=false[m
+[32m+[m[32m#spring.h2.console.settings.web-allow-others=false[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/resources/data.sql b/src/main/resources/data.sql[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b1e660f[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/resources/data.sql[m
+[36m@@ -0,0 +1,10 @@[m
+[32m+[m[32mINSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('a', 'a', FALSE);[m
+[32m+[m[32mINSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('xcv@sdf.js', 'wwx', FALSE);[m
+[32m+[m[32mINSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('fcv@sdf.js', 'wwf', FALSE);[m
+[32m+[m[32mINSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('azv@sdf.js', 'wwa', FALSE);[m
+[32m+[m[32mINSERT INTO ABONNEE(email, wachtwoord, ingelogd) VALUES ('qrv@sdf.js', 'wwq', FALSE);[m
+[32m+[m[32mINSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Komedie', 31.50);[m
+[32m+[m[32mINSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Horror', 22.50);[m
+[32m+[m[32mINSERT INTO CATEGORIE(titel, maandprijs) VALUES ('Romantiek', 19.50);[m
+[32m+[m[32mINSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id) VALUES (1, 3);[m
+[32m+[m[32mINSERT INTO ABONNEE_CATEGORIE(abonnee_id, categorie_id) VALUES (4, 1);[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/resources/schema.sql b/src/main/resources/schema.sql[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3ebf6e3[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/resources/schema.sql[m
+[36m@@ -0,0 +1,21 @@[m
+[32m+[m[32mDROP TABLE IF EXISTS ABONNEE;[m
+[32m+[m[32mCREATE TABLE ABONNEE([m
+[32m+[m[32m  id INT AUTO_INCREMENT PRIMARY KEY,[m
+[32m+[m[32m  email VARCHAR(50) NOT NULL,[m
+[32m+[m[32m  wachtwoord VARCHAR(50) NOT NULL,[m
+[32m+[m[32m  ingelogd BOOLEAN NOT NULL[m
+[32m+[m[32m);[m
+[32m+[m
+[32m+[m[32mDROP TABLE IF EXISTS CATEGORIE;[m
+[32m+[m[32mCREATE TABLE CATEGORIE([m
+[32m+[m[32m  id INT AUTO_INCREMENT  PRIMARY KEY,[m
+[32m+[m[32m  titel VARCHAR(50) NOT NULL,[m
+[32m+[m[32m  maandprijs DECIMAL(10,2) NOT NULL[m
+[32m+[m[32m);[m
+[32m+[m
+[32m+[m[32mDROP TABLE IF EXISTS ABONNEE_CATEGORIE;[m
+[32m+[m[32mCREATE TABLE ABONNEE_CATEGORIE([m
+[32m+[m[32m  id INT AUTO_INCREMENT  PRIMARY KEY,[m
+[32m+[m[32m  abonnee_id INT NOT NULL,[m
+[32m+[m[32m  categorie_id INT NOT NULL[m
+[32m+[m[32m);[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/resources/static/check.json b/src/main/resources/static/check.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fade82b[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/resources/static/check.json[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32m{[m
+[32m+[m[32m   "book":[[m
+[32m+[m[32m      {[m
+[32m+[m[32m         "id":"444",[m
+[32m+[m[32m         "language":"C",[m
+[32m+[m[32m         "edition":"First",[m
+[32m+[m[32m         "author":"Dennis Ritchie "[m
+[32m+[m[32m      },[m
+[32m+[m[32m      {[m
+[32m+[m[32m         "id":"555",[m
+[32m+[m[32m         "language":"C++",[m
+[32m+[m[32m         "edition":"second",[m
+[32m+[m[32m         "author":" Bjarne Stroustrup "[m
+[32m+[m[32m      }[m
+[32m+[m[32m   ][m
+[32m+[m[32m}[m[41m  [m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/resources/static/index.html b/src/main/resources/static/index.html[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3947edd[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/resources/static/index.html[m
+[36m@@ -0,0 +1,22 @@[m
+[32m+[m[32m<!DOCTYPE html>[m
+[32m+[m[32m<html>[m
+[32m+[m[32m <head>[m
+[32m+[m[32m    <title>Landingspagina Filmland</title>[m
+[32m+[m[32m  </head>[m
+[32m+[m[41m [m
+[32m+[m[32m<body>[m
+[32m+[m
+[32m+[m[32m<h2>Links</h2>[m
+[32m+[m
+[32m+[m[32m<ol>[m
+[32m+[m[32m  <li><a href="/abonnees">Lijst met abonnees</a></br /></li>[m
+[32m+[m[32m  <li><a href="/abonnees/abonnee/1">Abonnee met id 1</a></li>[m
+[32m+[m[32m  <li><a href="/abonnees/abonneecat/1/3">Associeer 1 met 3</a></li>[m
+[32m+[m[32m  <li><a href="/categorieen">Categorieen</a></li>[m
+[32m+[m[32m    <li><a href="/subscrcategorien">Ingetekende Categorieen</a></li>[m
+[32m+[m[32m   <li><a href="/login">Inloggen</a></li>[m
+[32m+[m[32m   <li><a href="/logout">Uitloggen</a></li>[m
+[32m+[m[32m</ol>[m[41m  [m
+[32m+[m
+[32m+[m[32m</body>[m
+[32m+[m[32m</html>[m
+\ No newline at end of file[m
+[1mdiff --git a/src/test/java/vin/test/Filmland/FilmlandApplicationTests.java b/src/test/java/vin/test/Filmland/FilmlandApplicationTests.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bd6b740[m
+[1m--- /dev/null[m
+[1m+++ b/src/test/java/vin/test/Filmland/FilmlandApplicationTests.java[m
+[36m@@ -0,0 +1,13 @@[m
+[32m+[m[32mpackage vin.test.Filmland;[m
+[32m+[m
+[32m+[m[32mimport org.junit.jupiter.api.Test;[m
+[32m+[m[32mimport org.springframework.boot.test.context.SpringBootTest;[m
+[32m+[m
+[32m+[m[32m@SpringBootTest[m
+[32m+[m[32mclass FilmlandApplicationTests {[m
+[32m+[m
+[32m+[m	[32m@Test[m
+[32m+[m	[32mvoid contextLoads() {[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m[32m}[m
