@@ -1,4 +1,4 @@
-package vin.test.model;
+package vin.assessment.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,6 +11,11 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+/**
+ * Entity mapping van de abonnement-tabel
+ * 
+ */
 
 @Entity
 @Table
@@ -27,14 +32,9 @@ public class Categorie implements Serializable {
 	
 	@Column
 	private BigDecimal maandprijs;
-// unknown target entity property: vin.test.model.Abonnee.Categorie in vin.test.model.Categorie.abonnees	
 	@ManyToMany(mappedBy = "categorieen", fetch = FetchType.LAZY)
 	private Set<Abonnee> abonnees = new HashSet<Abonnee>();
 	
-//	@ManyToOne (fetch = FetchType.EAGER)
-//	@JoinColumn(name = "abonnee_id")
-//	private Abonnee abonnee;
-
 	public BigDecimal getMaandprijs() {
 		return maandprijs;
 	}
@@ -55,19 +55,8 @@ public class Categorie implements Serializable {
 		return titel;
 	}
 
-
 	public void setTitel(String titel) {
 		this.titel = titel;
 	}
-
-//
-//	public BigDecimal getMaandPrijs() {
-//		return maandprijs;
-//	}
-
-//
-//	public void setMaandPrijs(BigDecimal maandPrijs) {
-//		this.maandprijs = maandPrijs;
-//	}
 
 }

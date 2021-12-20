@@ -1,4 +1,4 @@
-package vin.test;
+package vin.assessment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.jboss.logging.Logger.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import vin.test.model.Categorie;
+import vin.assessment.model.Categorie;
 
 @Service
 public class CategorieService {
@@ -18,7 +18,6 @@ public class CategorieService {
 	@Autowired
 	CategorieRepos categorieRepos;
 
-	//HIER
 	public List<Categorie> getSubscribedCategorieen(){
 		logger.log(Level.INFO,"getSubscribedCategorieen entered");
 		List<Categorie> categorieen = new ArrayList<Categorie>();
@@ -32,33 +31,6 @@ public class CategorieService {
 	public List<Categorie> getAllCategorieen(){
 		List<Categorie> categorieen = new ArrayList<Categorie>();
 		categorieRepos.findAll().forEach(categorie->categorieen.add(categorie));
-		
-		/*
-{
-"availableCategories":[
-{
-"name":"Dutch Films",
-"availableContent":10,
-"price":4.0
-},
-{
-"name":"Dutch Series",
-"availableContent":20,
-"price":6.0
-}
-],
-"subscribedCategories":[
-{
-"name":"International Films",
-"remainingContent":5,
-"price":8.0,
-"startDate":"01-01-2018"
-}
-]
-}
-		 */
-		
-		
 		return categorieen;
 	}
 	

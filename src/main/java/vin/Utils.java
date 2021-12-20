@@ -5,6 +5,11 @@ import java.util.HashMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+
+/**
+ * Uitbreidbare utitlity class
+ *
+ */
 public class Utils {
 
 	public static String JSONObject(HashMap<String, String> map) {

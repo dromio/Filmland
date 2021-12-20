@@ -1,9 +1,10 @@
-package vin.test;
+package vin.assessment;
 
 import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,20 +14,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import vin.test.model.Abonnee;
+import vin.assessment.model.Abonnee;
+
+/**
+ *  Request mappings voor abonnee-functionaliteit
+ * 
+ */
 
 @RestController
 @RequestMapping("abonnees")
 public class AbonneeController {
 
 	Logger logger = Logger.getLogger(AbonneeController.class.getName());
-
 	
 	@Autowired
 	AbonneeService abonneeService;
 	CategorieService categorieService;
 
-	@GetMapping
+	@GetMapping 	
 	private List<Abonnee> getAbonnees() {
 		return abonneeService.getAllAbonnees();
 	}
@@ -55,12 +60,9 @@ public class AbonneeController {
 		
 	
 	}
-
-	
 	
 	@DeleteMapping("/abonneedel/{id}")
 	private void deleteAbonnee(@PathVariable("id") Integer id) {
 		abonneeService.deleteAbonnee(id);
 	}
-
 }

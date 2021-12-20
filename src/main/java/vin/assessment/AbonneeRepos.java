@@ -1,4 +1,4 @@
-package vin.test;
+package vin.assessment;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,14 +9,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import vin.test.model.Abonnee;
+import vin.assessment.model.Abonnee;
 
 
 /**
- * Repository-interface om de data uit de databes te lezen en te 
- * wijzigen.
+ * Repository-interface om abonnee-informatie uit de database op te halen
  * 
- * */
+ */
 public interface AbonneeRepos extends CrudRepository<Abonnee, Integer>{
 	
 	@Transactional

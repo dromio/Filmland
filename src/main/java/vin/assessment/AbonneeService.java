@@ -1,10 +1,9 @@
-package vin.test;
+package vin.assessment;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.math.BigDecimal;
 
@@ -14,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import vin.Utils;
-
-import vin.test.model.Abonnee;
-import vin.test.model.Categorie;
+import vin.assessment.model.Abonnee;
+import vin.assessment.model.Categorie;
 
 @Service
 public class AbonneeService {
@@ -40,7 +38,6 @@ public class AbonneeService {
 		map.put("Abonnee", Integer.toString(abonnee.getId()));
 		map.put("Categorie", categorie_id.toString());
 
-		String info = " - success";
 		Integer[] regels = abonneeRepos.abonnementBestaat(abonnee.getId(), categorie_id);
 		if (regels == null || regels.length == 0) {
 			// get maandprijs

@@ -1,12 +1,15 @@
-package vin.test;
+package vin.assessment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-
-//@ComponentScan(basePackageClasses = CategorieController.class)
-//@ComponentScan(basePackageClasses = { CategorieController.class, AbonneeController.class })
+/**
+ * Ingang applicatie.
+ * 
+ * @author Vincent van Doorn
+ *
+ */
 
 @SpringBootApplication
 @ComponentScan(basePackageClasses = { AbonneeRepos.class, CategorieRepos.class })
@@ -15,6 +18,5 @@ public class FilmlandApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FilmlandApplication.class, args);
 	}
-
 	
 }

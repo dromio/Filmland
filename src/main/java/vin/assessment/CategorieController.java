@@ -1,4 +1,4 @@
-package vin.test;
+package vin.assessment;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import vin.test.model.Categorie;
+import vin.assessment.model.Categorie;
 
 @RestController
 public class CategorieController {

@@ -1,13 +1,16 @@
-package vin.test;
+package vin.assessment;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import vin.test.model.Categorie;
+import vin.assessment.model.Categorie;
 
-
+/**
+ * Repository-interface om abonnement-categorieen uit de database op te halen
+ * 
+ */
 public interface CategorieRepos extends CrudRepository<Categorie, Integer>{
 
 	// gebruik JPQL native

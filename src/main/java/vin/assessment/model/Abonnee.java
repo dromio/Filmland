@@ -1,4 +1,4 @@
-package vin.test.model;
+package vin.assessment.model;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +15,12 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.springframework.beans.factory.annotation.Value;
+
+
+/**
+ * Entity mapping op de abonnee-tabel
+ * 
+ */
 
 @Entity
 @Table
